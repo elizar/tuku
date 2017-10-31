@@ -10,12 +10,14 @@ COPY . $APP_DIR
 
 WORKDIR $APP_DIR
 
+RUN rm -rf .git*
+
 # Lint, test and buidl
 RUN go get -u github.com/kisielk/errcheck
 RUN go get -u github.com/golang/lint/golint
-RUN go get -u ./...
+RUN go get ./...
 RUN go vet ./... && errcheck ./... && golint -set_exit_status ./...
 RUN go test -v ./...
 RUN go build .
 
-ENTRYPOINT ./tuku -port ${PORT} -file ${FILE}
+ENTRYPOINT ./tuku -port ${PORT:-0} -file ${FILE}
