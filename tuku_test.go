@@ -10,9 +10,9 @@ var tests = []struct {
 	{"fing/fan/foo", "foo"},
 }
 
-func TestPluck(t *testing.T) {
+func TestPop(t *testing.T) {
 	for _, test := range tests {
-		if fn := pluck(test.A.(string), "/"); fn != test.B {
+		if fn := pop(test.A.(string), "/"); fn != test.B {
 			t.Fatalf("want: %s, got: %s\n", test.B, fn)
 		}
 	}

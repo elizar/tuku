@@ -81,7 +81,7 @@ func main() {
 // to all the connected clients. Also prints to standard out
 func listenAndBroadcast(clients sockets, messageChan chan string) {
 	for msg := range messageChan {
-		fn := pluck(*file, "/")
+		fn := pop(*file, "/")
 		log.Printf("[ %s ] %s", fn, msg)
 
 		// If filter exists and it doesn't match, then we don't have to
@@ -96,14 +96,14 @@ func listenAndBroadcast(clients sockets, messageChan chan string) {
 	}
 }
 
-// pluck splits the strings with the given separator and returns the last
+// pop splits the strings with the given separator and returns the last
 // item.
-func pluck(s, sp string) string {
+func pop(s, sp string) string {
 	ls := strings.Split(s, sp)
 	return ls[len(ls)-1]
 }
 
-// tailFile executes a `tailFile` command with a given file and
+// tailFile executes a `tail` command with a given file and
 // broadcast changes to messageChan
 func tailFile(file string, errChan chan error, messageChan chan string) {
 	cmd := exec.Command("tail", "-f", file)
