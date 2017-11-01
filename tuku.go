@@ -86,7 +86,7 @@ func listenAndBroadcast(clients sockets, messageChan chan string) {
 
 		// If filter exists and it doesn't match, then we don't have to
 		// broadcast it to the clients
-		if *filter != "" && !regexp.MustCompile(*filter).MatchString(msg) {
+		if *filter != "" && !regexp.MustCompile(`(?i)`+*filter).MatchString(msg) {
 			continue
 		}
 
