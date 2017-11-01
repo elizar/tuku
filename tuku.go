@@ -22,8 +22,9 @@ import (
 type sockets map[string]*websocket.Conn
 
 var (
-	file = flag.String("file", "", "A file to tail")
-	port = flag.Int("port", 0, "A port in which the server will bind to")
+	file   = flag.String("file", "", "A file to tail")
+	port   = flag.Int("port", 0, "A port in which the server will bind to")
+	filter = flag.String("filter", "", "A pattern to match")
 
 	clients sockets
 )
@@ -82,6 +83,12 @@ func listenAndBroadcast(clients sockets, messageChan chan string) {
 	for msg := range messageChan {
 		fn := pluck(*file, "/")
 		log.Printf("[ %s ] %s", fn, msg)
+
+		// If filter exists and it doesn't match, then we don't have to
+		// broadcast it to the clients
+		if *filter != "" && !regexp.MustCompile(*filter).MatchString(msg) {
+			continue
+		}
 
 		for _, c := range clients {
 			_ = websocket.Message.Send(c, msg)
