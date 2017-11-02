@@ -84,14 +84,10 @@ func listenAndBroadcast(clients sockets, messageChan chan string) {
 		fn := pop(*file, "/")
 		log.Printf("[ %s ] %s", fn, msg)
 
-		// If filter exists and it doesn't match, then we don't have to
-		// broadcast it to the clients
-		if *filter != "" && !regexp.MustCompile(`(?i)`+*filter).MatchString(msg) {
-			continue
-		}
-
-		for _, c := range clients {
-			_ = websocket.Message.Send(c, msg)
+		if regexp.MustCompile(`(?i)` + *filter).MatchString(msg) {
+			for _, c := range clients {
+				_ = websocket.Message.Send(c, msg)
+			}
 		}
 	}
 }
