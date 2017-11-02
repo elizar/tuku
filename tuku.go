@@ -121,7 +121,7 @@ func pop(s, sp string) string {
 // tailFile executes a `tail` command with a given file and
 // broadcast changes to messageChan
 func tailFile(file string, errChan chan error, messageChan chan string) {
-	cmd := exec.Command("tail", "-f", file)
+	cmd := exec.Command("tail", "-F", file)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -143,6 +143,7 @@ func tailFile(file string, errChan chan error, messageChan chan string) {
 	}
 }
 
+// socketHandler handles client connection
 func socketHandler(conn *websocket.Conn) {
 	id := uuid.NewV4().String()
 	clients[id] = conn
