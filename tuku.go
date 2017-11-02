@@ -147,8 +147,11 @@ func socketHandler(conn *websocket.Conn) {
 	id := uuid.NewV4().String()
 	clients[id] = conn
 
-	_ = websocket.Message.Send(conn, "Welcome!")
 	log.Printf("client %s connected\n", id)
+
+	for _, m := range cache {
+		_ = websocket.Message.Send(conn, m)
+	}
 
 	var msg string
 	for websocket.Message.Receive(conn, &msg) == nil {
