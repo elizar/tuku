@@ -27,7 +27,10 @@ var (
 	filter = flag.String("filter", "", "A pattern to match")
 
 	clients sockets
+	cache   []string
 )
+
+const totalCachedItems = 20
 
 func main() {
 	flag.Parse()
@@ -59,7 +62,7 @@ func main() {
 	messageChan := make(chan string)
 
 	go tailFile(*file, errChan, messageChan)
-	go listenAndBroadcast(clients, messageChan)
+	go listenBroadcastAndCache(clients, cacher, messageChan)
 
 	if err := <-errChan; err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -77,14 +80,30 @@ func main() {
 	}
 }
 
-// listenAndBroadcast range over through messageChan and broadcast message
-// to all the connected clients. Also prints to standard out
-func listenAndBroadcast(clients sockets, messageChan chan string) {
+// cacher add (n) number of messages to cache
+func cacher(msg string) {
+	items := cache
+
+	if len(items) == totalCachedItems {
+		items = cache[1:totalCachedItems]
+	}
+
+	cache = append(items, msg)
+}
+
+// listenBroadcastAndCache broadcasts message to connected clients
+// and cache at least 20 items. Also prints to standard out
+func listenBroadcastAndCache(
+	clients sockets,
+	cacher func(msg string),
+	messageChan chan string,
+) {
 	for msg := range messageChan {
 		fn := pop(*file, "/")
 		log.Printf("[ %s ] %s", fn, msg)
 
 		if regexp.MustCompile(`(?i)` + *filter).MatchString(msg) {
+			cacher(msg)
 			for _, c := range clients {
 				_ = websocket.Message.Send(c, msg)
 			}
