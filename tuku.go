@@ -22,15 +22,14 @@ import (
 type sockets map[string]*websocket.Conn
 
 var (
-	file   = flag.String("file", "", "A file to tail")
-	port   = flag.Int("port", 0, "A port in which the server will bind to")
-	filter = flag.String("filter", "", "A pattern to match")
+	file         = flag.String("file", "", "A file to tail")
+	filter       = flag.String("filter", "", "A pattern to match")
+	port         = flag.Int("port", 0, "A port in which the server will bind to")
+	itemsToCache = flag.Int("items", 69, "Total number of messages to cache")
 
 	clients sockets
 	cache   []string
 )
-
-const totalCachedItems = 20
 
 func main() {
 	flag.Parse()
@@ -83,11 +82,9 @@ func main() {
 // cacher add (n) number of messages to cache
 func cacher(msg string) {
 	items := cache
-
-	if len(items) == totalCachedItems {
-		items = cache[1:totalCachedItems]
+	if len(items) == *itemsToCache {
+		items = cache[1:*itemsToCache]
 	}
-
 	cache = append(items, msg)
 }
 
