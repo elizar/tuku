@@ -142,7 +142,9 @@ func tailFile(file string, errChan chan error, messageChan chan string) {
 
 // socketHandler handles client connection
 func socketHandler(conn *websocket.Conn) {
-	id := uuid.NewV4().String()
+	uid, _ := uuid.NewV4()
+	id := uid.String()
+
 	clients[id] = conn
 
 	log.Printf("client %s connected\n", id)
