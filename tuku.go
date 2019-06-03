@@ -71,7 +71,7 @@ func main() {
 	// TUKU!
 	fmt.Printf("\n    TUKU!\n\n")
 
-	http.Handle("/ws", websocket.Handler(socketHandler))
+	http.Handle("/", websocket.Handler(socketHandler))
 	err = http.ListenAndServe(":"+PORT, nil)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -142,7 +142,7 @@ func tailFile(file string, errChan chan error, messageChan chan string) {
 
 // socketHandler handles client connection
 func socketHandler(conn *websocket.Conn) {
-	uid, _ := uuid.NewV4()
+	uid := uuid.NewV4()
 	id := uid.String()
 
 	clients[id] = conn
